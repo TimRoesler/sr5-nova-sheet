@@ -5,8 +5,11 @@ Shadowrun-5e-System in Foundry VTT — voller Funktionsumfang des Systembogens i
 
 ## Funktionen
 
-- Alternativer Charakterbogen im Neon-/AR-Overlay-Look
+- Alternativer Charakterbogen im Neon-/AR-Overlay-Look (Cyberdeck-Konsole)
 - Voller Funktionsumfang des System-Charakterbogens
+- Neon-Look automatisch auf **allen** Sheets: alle Actor-Typen (Character, Spirit,
+  IC, Sprite, Vehicle) und alle Item-Sheets erhalten die Optik über ihr
+  bestehendes Layout; nur der Charakterbogen nutzt zusätzlich die Cyberdeck-Konsole
 - Nahtlos für das Shadowrun-5e-System
 
 ## Installation

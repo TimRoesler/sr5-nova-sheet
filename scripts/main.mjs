@@ -37,7 +37,9 @@ Hooks.once('ready', () => {
 
     class SR5NovaCharacterSheet extends BaseSheet {
         static DEFAULT_OPTIONS = {
-            classes: ['sr5-nova'],
+            // 'sr5-nova' trägt das Neon-Theme (überall gültig), 'sr5-nova-console'
+            // schaltet zusätzlich das Cyberdeck-Layout frei (nur dieser Bogen).
+            classes: ['sr5-nova', 'sr5-nova-console'],
             position: { width: 1080, height: 840 }
         };
 
@@ -93,4 +95,19 @@ Hooks.once('ready', () => {
     });
 
     console.log(`${MODULE_ID} | Nova Sheet registriert.`);
+});
+
+// Neon-Look auf ALLE Shadowrun5e-Actor- und Item-Sheets legen.
+// Der Core ruft Render-Hooks für jede Klasse der Vererbungskette auf; Actor-
+// und Item-Sheets erben beide von DocumentSheetV2, daher deckt ein einziger
+// Hook beide ab. Die Guard beschränkt auf echte Dokument-Sheets des Systems
+// (nicht auf Dialoge/Manager, die dieselbe 'sr5v2'-Klasse tragen). Der
+// dedizierte Konsolenbogen trägt zusätzlich 'sr5-nova-console' und bleibt so
+// die reichere Variante; hier wird nur das Theme ergänzt (idempotent).
+Hooks.on('renderDocumentSheetV2', (app) => {
+    if (game.system?.id !== SYSTEM_SCOPE) return;
+    const doc = app?.document;
+    if (doc instanceof Actor || doc instanceof Item) {
+        app.element?.classList.add('sr5-nova');
+    }
 });
