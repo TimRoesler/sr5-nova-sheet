@@ -1,0 +1,128 @@
+<header class="nova-deck">
+    <section class="nova-persona" aria-label="Persona">
+        <div class="nova-panel-tag"><span>01</span> PERSONA</div>
+        <div class="nova-persona-body">
+            <div class="nova-portrait">
+                <img class="sheet-image" src="{{actor.img}}"
+                    data-tooltip="{{#if @root.isEditMode}}{{actor.img}}{{else}}{{actor.name}}{{/if}}"
+                    {{#if @root.isEditMode}}data-action="editImage" data-edit="img"{{/if}} />
+            </div>
+            <div class="nova-identity">
+                <div class="nova-nameplate">
+                    {{#unless isLimited}}
+                        {{#if (hasAnyFreshImports actor)}}
+                            {{#if @root.isEditMode}}
+                                <button type="button" class="toggle-fresh-import" data-tooltip="SR5.MarkImportsTooltip" data-action="clearFreshImports">
+                                    <img src="systems/shadowrun5e/dist/icons/checklist-white.svg" width="22" height="22" />
+                                </button>
+                            {{/if}}
+                        {{/if}}
+                        {{> 'systems/shadowrun5e/dist/templates/v2/common/document-source-icon.hbs' system.description.source }}
+                    {{/unless}}
+                    {{formInput fields.name value=actor.name classes="sheet-name"
+                                placeholder=(localize "SR5.Name") disabled=@root.isPlayMode rootId=rootId}}
+                </div>
+
+                {{#unless isLimited}}
+                    {{#if @root.isEditMode}}
+                        <div class="nova-edit-grid">
+                            <label>{{localize "SR5.Source"}}</label>
+                            {{formInput systemFields.description.fields.source value=source.system.description.source rootId=rootId}}
+                            <label data-tooltip="{{systemFields.metatype.hint}}">{{systemFields.metatype.label}}</label>
+                            {{formInput systemFields.metatype value=source.system.metatype rootId=rootId localize=true}}
+                            <label>{{systemFields.attributes.fields.edge.fields.base.label}}</label>
+                            {{formInput systemFields.attributes.fields.edge.fields.base value=source.system.attributes.edge.base rootId=rootId}}
+                        </div>
+                    {{else}}
+                        <div class="nova-idline">
+                            {{#unless system.is_critter}}<strong>{{localizeOb system.metatype config.character.types}}</strong>{{/unless}}
+                            {{#if system.is_critter}}<span>CRITTER</span>{{/if}}
+                            {{#if system.is_npc}}<span>NPC</span>{{/if}}
+                            {{#if system.npc.is_grunt}}<span>GRUNT</span>{{/if}}
+                            <i></i>
+                            <small>ONLINE</small>
+                        </div>
+                    {{/if}}
+
+                    <div class="nova-resources">
+                        {{#unless (or system.is_npc system.is_critter)}}
+                            <div class="nova-readout">
+                                <label><i class="fas fa-yen"></i> NUYEN</label>
+                                {{#if @root.isEditMode}}
+                                    {{formInput systemFields.nuyen value=source.system.nuyen rootId=rootId}}
+                                {{else}}
+                                    <a data-action="openNuyenManager">{{nuyenValue system.nuyen}}</a>
+                                {{/if}}
+                            </div>
+                            <div class="nova-readout">
+                                <label><i class="fas fa-yin-yang"></i> KARMA</label>
+                                {{#if @root.isEditMode}}
+                                    <span>{{formInput systemFields.karma.fields.value value=source.system.karma.value rootId=rootId}} / {{formInput systemFields.karma.fields.max value=source.system.karma.max rootId=rootId}}</span>
+                                {{else}}
+                                    <a data-action="openKarmaManager">{{system.karma.value}} / {{system.karma.max}}</a>
+                                {{/if}}
+                            </div>
+                            <div class="nova-readout">
+                                <label><i class="far fa-brain-circuit"></i> ESS</label>
+                                <b data-attribute-modifier-tooltip="essence">{{floatValue system.attributes.essence.value 2}}</b>
+                            </div>
+                        {{/unless}}
+                        <div class="nova-readout nova-speed">
+                            <label>MOVE</label>
+                            {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/movement.hbs' }}
+                        </div>
+                    </div>
+                {{/unless}}
+            </div>
+        </div>
+    </section>
+
+    {{#unless isLimited}}
+        <section class="nova-core" aria-label="Attribute">
+            <div class="nova-panel-tag"><span>02</span> CORE KEYS</div>
+            <div class="nova-attr-grid">
+                {{#each novaAttributes as |a|}}
+                    <button type="button" class="nova-attr" data-action="rollAttribute"
+                            data-attribute-id="{{a.id}}" data-attribute-modifier-tooltip="{{a.id}}">
+                        <span>{{a.short}}</span><b>{{a.value}}</b><i></i>
+                    </button>
+                {{/each}}
+            </div>
+            {{#unless (or system.is_npc system.is_critter)}}
+                <button type="button" class="nova-rep" data-action="openReputationManager">
+                    <span>{{localize "SR5.Labels.ActorSheet.StreetCredShort"}} <b>{{system.street_cred}}</b></span>
+                    <span>{{localize "SR5.Labels.ActorSheet.NotorietyShort"}} <b>{{system.notoriety}}</b></span>
+                    <span>{{localize "SR5.Labels.ActorSheet.PublicAwarenessShort"}} <b>{{system.public_awareness}}</b></span>
+                </button>
+            {{/unless}}
+        </section>
+
+        <section class="nova-vitals" aria-label="Vitals">
+            <div class="nova-panel-tag"><span>03</span> BIOFEEDBACK</div>
+            {{#if @root.isPlayMode}}
+                <div class="nova-tracks">
+                    {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                        id='stun' track=system.track.stun tooltip=(localize "SR5.Labels.ActorSheet.StunTrack") tolerance=woundTolerance}}
+                    {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                        id='physical' track=system.track.physical tooltip=(localize "SR5.Labels.ActorSheet.PhysicalTrack") tolerance=woundTolerance}}
+                </div>
+                <div class="nova-initiative">
+                    {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/initiative.hbs' }}
+                </div>
+                {{#if system.attributes.edge.value}}
+                    <div class="nova-edge">
+                        <label>EDGE</label>
+                        {{> 'systems/shadowrun5e/dist/templates/v2/common/horizontal-cells.hbs'
+                            tooltip="SR5.AttrEdge" value=system.attributes.edge.uses max=system.attributes.edge.value id="edge"}}
+                    </div>
+                {{/if}}
+            {{else}}
+                <div class="nova-edit-note">
+                    <i class="fas fa-sliders"></i>
+                    <strong>CONFIG MODE</strong>
+                    <span>Persona parameters unlocked</span>
+                </div>
+            {{/if}}
+        </section>
+    {{/unless}}
+</header>

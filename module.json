@@ -1,0 +1,29 @@
+{
+  "id": "sr5-nova-sheet",
+  "title": "SR5 Nova Sheet",
+  "description": "Ein alternativer, aufgeräumter Neon-Charakterbogen für das Shadowrun-5e-System – volle Funktionalität des Systembogens in neuem Gewand. / An alternative, clean neon character sheet for the Shadowrun 5e system.",
+  "version": "1.2.0",
+  "url": "https://github.com/TimRoesler/sr5-nova-sheet",
+  "manifest": "https://raw.githubusercontent.com/TimRoesler/sr5-nova-sheet/main/module.json",
+  "download": "https://github.com/TimRoesler/sr5-nova-sheet/releases/latest/download/sr5-nova-sheet.zip",
+  "authors": [{ "name": "TRO" }],
+  "compatibility": {
+    "minimum": "13",
+    "verified": "14.364"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "shadowrun5e",
+        "type": "system",
+        "compatibility": { "minimum": "0.36.0" }
+      }
+    ]
+  },
+  "esmodules": ["scripts/main.mjs"],
+  "styles": ["styles/nova.css"],
+  "languages": [
+    { "lang": "de", "name": "Deutsch", "path": "lang/de.json" },
+    { "lang": "en", "name": "English", "path": "lang/en.json" }
+  ]
+}
