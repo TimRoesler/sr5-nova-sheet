@@ -1,0 +1,120 @@
+{{!--
+    Generischer Nova-Cyberdeck-Header für Nicht-Character-Actor-Typen
+    (Vehicle/Drohne, Spirit, Sprite, IC).
+
+    Anders als der Character-Header (console.hbs) bleibt hier der System-Footer
+    erhalten: die typspezifischen editierbaren Ressourcenfelder (Force, Level,
+    Rating, Kosten/Verfügbarkeit, Drohnen-Flags …) liegen weiterhin dort und
+    bleiben so korrekt. Der Deck-Header liefert nur die Signatur-Optik:
+    Persona-Panel, klick-/lesbares Attribut-Keybed und Biofeedback-Anzeigen.
+
+    Kontextfelder stammen vom jeweiligen System-Sheet:
+    isVehicle/isSpirit/isSprite/isIC, system.track.*, system.attributes.edge.*.
+    novaAttributes/novaIdline/novaReadouts werden in scripts/main.mjs berechnet.
+--}}
+<header class="nova-deck">
+    <section class="nova-persona" aria-label="Persona">
+        <div class="nova-panel-tag"><span>01</span> PERSONA</div>
+        <div class="nova-persona-body">
+            <div class="nova-portrait">
+                <img class="sheet-image" src="{{actor.img}}"
+                    data-tooltip="{{#if @root.isEditMode}}{{actor.img}}{{else}}{{actor.name}}{{/if}}"
+                    {{#if @root.isEditMode}}data-action="editImage" data-edit="img"{{/if}} />
+            </div>
+            <div class="nova-identity">
+                <div class="nova-nameplate">
+                    {{#unless isLimited}}
+                        {{> 'systems/shadowrun5e/dist/templates/v2/common/document-source-icon.hbs' system.description.source }}
+                    {{/unless}}
+                    {{formInput fields.name value=actor.name classes="sheet-name"
+                                placeholder=(localize "SR5.Name") disabled=@root.isPlayMode rootId=rootId}}
+                </div>
+
+                {{#unless isLimited}}
+                    <div class="nova-idline">
+                        {{#each novaIdline as |tag|}}<span>{{tag}}</span>{{/each}}
+                        <i></i>
+                        <small>ONLINE</small>
+                    </div>
+
+                    {{#if novaReadouts.length}}
+                        <div class="nova-resources">
+                            {{#each novaReadouts as |r|}}
+                                <div class="nova-readout">
+                                    <label>{{r.label}}</label>
+                                    <b>{{r.value}}</b>
+                                </div>
+                            {{/each}}
+                        </div>
+                    {{/if}}
+                {{/unless}}
+            </div>
+        </div>
+    </section>
+
+    {{#unless isLimited}}
+        <section class="nova-core" aria-label="Attribute">
+            <div class="nova-panel-tag"><span>02</span> CORE KEYS</div>
+            <div class="nova-attr-grid">
+                {{#each novaAttributes as |a|}}
+                    {{#if a.roll}}
+                        <button type="button" class="nova-attr" data-action="rollAttribute"
+                                data-attribute-id="{{a.id}}"
+                                {{#if a.tooltip}}data-attribute-modifier-tooltip="{{a.tooltip}}"{{/if}}
+                                data-tooltip="{{a.name}}">
+                            <span>{{a.short}}</span><b>{{a.value}}</b><i></i>
+                        </button>
+                    {{else}}
+                        <div class="nova-attr nova-attr-static" data-tooltip="{{a.name}}">
+                            <span>{{a.short}}</span><b>{{a.value}}</b>
+                        </div>
+                    {{/if}}
+                {{/each}}
+            </div>
+        </section>
+
+        <section class="nova-vitals" aria-label="Vitals">
+            <div class="nova-panel-tag"><span>03</span> BIOFEEDBACK</div>
+            {{#if @root.isPlayMode}}
+                <div class="nova-tracks">
+                    {{#if (or isIC isSprite)}}
+                        {{#if system.track.matrix}}
+                            {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                                id='matrix' track=system.track.matrix tooltip=(localize "SR5.Labels.ActorSheet.Matrix")}}
+                        {{/if}}
+                    {{else}}
+                        {{#if system.track.stun}}
+                            {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                                id='stun' track=system.track.stun tooltip=(localize "SR5.Labels.ActorSheet.StunTrack")}}
+                        {{/if}}
+                        {{#if system.track.physical}}
+                            {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                                id='physical' track=system.track.physical tooltip=(localize "SR5.Labels.ActorSheet.PhysicalTrack")
+                                tolerance=(ifThen isVehicle woundTolerance undefined)}}
+                        {{/if}}
+                        {{#if system.track.matrix}}
+                            {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/condition-monitor.hbs'
+                                id='matrix' track=system.track.matrix tooltip=(localize "SR5.Labels.ActorSheet.Matrix")}}
+                        {{/if}}
+                    {{/if}}
+                </div>
+                <div class="nova-initiative">
+                    {{> 'systems/shadowrun5e/dist/templates/v2/actor/parts/initiative.hbs' }}
+                </div>
+                {{#if system.attributes.edge.value}}
+                    <div class="nova-edge">
+                        <label>EDGE</label>
+                        {{> 'systems/shadowrun5e/dist/templates/v2/common/horizontal-cells.hbs'
+                            tooltip="SR5.AttrEdge" value=system.attributes.edge.uses max=system.attributes.edge.value id="edge"}}
+                    </div>
+                {{/if}}
+            {{else}}
+                <div class="nova-edit-note">
+                    <i class="fas fa-sliders"></i>
+                    <strong>CONFIG MODE</strong>
+                    <span>Parameters unlocked below</span>
+                </div>
+            {{/if}}
+        </section>
+    {{/unless}}
+</header>
